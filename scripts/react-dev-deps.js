@@ -1,16 +1,9 @@
 #!/usr/bin/env node
 
-const fs = require('fs-extra')
-const spawn = require('cross-spawn')
+const fs = require('fs')
+const { spawnSync, } = require('child_process')
 
-const [, , flag,] = process.argv
-const cmd = flag === '-N' ? 'npm' : 'yarn'
-
-const isCreateReactApp = fs.pathExistsSync('node_modules/react-scripts')
-const isGastbyjs = fs.pathExistsSync('node_modules/gatsby')
-
-// edit deps here
-const pkgs = ['react@next', 'react-dom@next', 'styled-components',]
+// Edit dev dependencies here
 const devPkgs = [
   'prettier',
   'lint-staged',
@@ -19,35 +12,27 @@ const devPkgs = [
   'eslint-plugin-react-hooks',
   '-D',
 ]
+const [, , option,] = process.argv
+const cmd = option === '-N' ? 'npm' : 'yarn'
+const args = cmd === 'yarn' ? ['add', ...devPkgs,] : ['install', ...devPkgs,]
 
-// using yarn or npm?
-const args = cmd === 'yarn' ? ['add', ...pkgs,] : ['install', ...pkgs,]
-const devArgs = cmd === 'yarn' ? ['add', ...devPkgs,] : ['install', ...devPkgs,]
+const isCreateReactApp = fs.existsSync('node_modules/react-scripts')
+const isGastbyjs = fs.existsSync('node_modules/gatsby')
 
 if (isCreateReactApp) {
-  spawn.sync(cmd, args, { stdio: 'inherit', })
-  spawn.sync(cmd, devArgs, { stdio: 'inherit', })
+  spawnSync(cmd, args, { stdio: 'inherit', })
+
   writePrettierConfig()
 } else if (isGastbyjs) {
-  // adding gatsby plugins
-  const gatsbyArgs = [
-    ...pkgs,
-    'babel-plugin-styled-components',
-    'gatsby-plugin-styled-components',
-  ]
-  const gatsbyDevArgs = [
-    ...devArgs,
-    'babel-eslint',
-    'eslint',
-    'eslint-plugin-react',
-  ]
+  const gatsbyArgs = [...args, 'babel-eslint', 'eslint', 'eslint-plugin-react',]
 
-  spawn.sync(cmd, gatsbyArgs, { stdio: 'inherit', })
-  spawn.sync(cmd, gatsbyDevArgs, { stdio: 'inherit', })
+  spawnSync(cmd, gatsbyArgs, { stdio: 'inherit', })
+
   writeEslinConfig()
+
   writePrettierConfig()
 } else {
-  console.log('You not appear to be in a Create-React-App or GatsbyJS project.')
+  console.log('You appear to not be in a Create-React-App or GatsbyJS project.')
 }
 
 function writePrettierConfig() {
