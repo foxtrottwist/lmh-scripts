@@ -52,7 +52,21 @@ const lint = {
   },
 }
 
-// Other configuration files
+// README and configuration files
+const flowInit = cmd === 'yarn' ? `${cmd} flow init` : `${cmd} run flow init`
+
+const READMEmd = `<div align="center">
+
+<h1>Project Title Goes Here</h1>
+
+<p>A short description here</p>
+
+</div>
+
+<hr />
+
+### More to come...
+`
 const prettierrc = `{
   "printWidth": 80,
   "tabWidth": 2,
@@ -115,12 +129,11 @@ if (isCreateReactApp) {
   )
 
   fs.writeFileSync(path.join(cwd, '.prettierrc'), prettierrc)
+  fs.writeFileSync(path.join(cwd, 'README.md'), READMEmd)
 
   spawnSync(cmd, args, { stdio: 'inherit', })
 
-  execSync(`${cmd === 'yarn' ? cmd : `${cmd} run`} flow init`, {
-    stdio: 'ignore',
-  })
+  execSync(flowInit, { stdio: 'ignore', })
 
   execSync('git add -A', { stdio: 'ignore', })
   execSync('git commit -m "Development configuration updated"', {
@@ -142,6 +155,7 @@ if (isCreateReactApp) {
     'gatsby-plugin-flow',
   ]
 
+  // Initialize git before adding git hooks with husky
   execSync('git init', { stdio: 'ignore', })
   execSync('git add -A', { stdio: 'ignore', })
   execSync('git commit -m "Initial commit"', { stdio: 'ignore', })
@@ -156,13 +170,12 @@ if (isCreateReactApp) {
   )
 
   fs.writeFileSync(path.join(cwd, '.prettierrc'), prettierrc)
+  fs.writeFileSync(path.join(cwd, 'README.md'), READMEmd)
   fs.writeFileSync(path.join(cwd, 'gatsby-config.js'), gatsbyconfigjs)
 
   spawnSync(cmd, gatsbyArgs, { stdio: 'inherit', })
 
-  execSync(`${cmd === 'yarn' ? cmd : `${cmd} run`} flow init`, {
-    stdio: 'ignore',
-  })
+  execSync(flowInit, { stdio: 'ignore', })
 
   execSync('git add -A', { stdio: 'ignore', })
   execSync('git commit -m "Development configuration updated"', {
@@ -172,7 +185,10 @@ if (isCreateReactApp) {
   // If you are neither in a create-react-app or GatsbyJS project
 } else {
   console.log(
-    `You appear to not be in a create-react-app or GatsbyJS project.
-    To use this script run it from the root of your create-react-app or GatsbyJS project.`,
+    `It appears you are not in a create-react-app or GatsbyJS project.
+
+     To use this script, run it from the root of your create-react-app 
+    
+     or GatsbyJS project.`,
   )
 }
