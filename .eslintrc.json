@@ -3,7 +3,8 @@
     "strict": 0,
     "no-ternary": "off",
     "comma-dangle": ["error", "always"],
-    "no-console": "off"
+    "no-console": "off",
+    "no-useless-escape": "off"
   },
   "extends": ["eslint:recommended", "prettier"],
   "parserOptions": {

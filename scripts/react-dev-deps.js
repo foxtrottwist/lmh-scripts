@@ -1,5 +1,13 @@
 #!/usr/bin/env node
 
+/*
+  Provides additional dev dependencies for create-react-app
+  and GatsbyJS projects. Adding prefered configurations
+  for eslint, flow, prettier, and others creating a more 
+  homogeneous enviroment to develop across both  GatsbyJs
+  and create-react-app.
+*/
+
 const fs = require('fs')
 const path = require('path')
 const os = require('os')
@@ -9,7 +17,7 @@ const cwd = process.cwd()
 // Edit primary dev dependencies here
 const devPkgs = [
   'eslint-config-prettier',
-  'eslint-plugin-react-hooks',
+  'eslint-plugin-react-hooks@next',
   'flow-bin',
   'husky',
   'lint-staged',
@@ -31,7 +39,11 @@ const packagejson = require(path.join(cwd, 'package.json'))
 /* Properties are separated out to remove unwanted boilerplate from the default 
    GatsbyJS package.json, and to add custom propeties such as scripts etc. */
 const dependencies = packagejson.dependencies
-const scripts = { ...packagejson.scripts, flow: 'flow', }
+const scripts = {
+  ...packagejson.scripts,
+  flow: 'flow',
+  format: `prettier --write \"src/**/*.{js,jsx,json,css,html,md,mdx}\"`,
+}
 
 const eslintConfig = {
   extends: ['react-app', 'prettier/react', 'prettier',],
@@ -46,9 +58,9 @@ const husky = {
     'pre-commit': 'lint-staged',
   },
 }
-const lint = {
+const lintStaged = {
   'lint-staged': {
-    'src/**/*.{js,jsx,json,css}': ['prettier --write', 'git add',],
+    'src/**/*.{js,jsx,json,css,html,md,mdx}': ['prettier --write', 'git add',],
   },
 }
 
@@ -122,7 +134,7 @@ if (isCreateReactApp) {
   fs.writeFileSync(
     path.join(cwd, 'package.json'),
     JSON.stringify(
-      { ...packagejson, scripts, eslintConfig, husky, ...lint, },
+      { ...packagejson, scripts, eslintConfig, husky, ...lintStaged, },
       null,
       2,
     ) + os.EOL,
@@ -163,7 +175,7 @@ if (isCreateReactApp) {
   fs.writeFileSync(
     path.join(cwd, 'package.json'),
     JSON.stringify(
-      { dependencies, scripts, eslintConfig, husky, ...lint, },
+      { dependencies, scripts, eslintConfig, husky, ...lintStaged, },
       null,
       2,
     ) + os.EOL,
