@@ -3,7 +3,7 @@
 /*
   Provides additional dev dependencies for create-react-app
   and GatsbyJS projects. Adding prefered configurations
-  for eslint, flow, prettier, and others creating a more 
+  for eslint, prettier, and others creating a more 
   homogeneous enviroment to develop across both  GatsbyJs
   and create-react-app.
 */
@@ -41,7 +41,6 @@ const packagejson = require(path.join(cwd, 'package.json'))
 const dependencies = packagejson.dependencies
 const scripts = {
   ...packagejson.scripts,
-  flow: 'flow',
   format: `prettier --write \"src/**/*.{js,jsx,json,css,html,md,mdx}\"`,
 }
 
@@ -64,8 +63,6 @@ const lintStaged = {
 }
 
 // README and configuration files
-const flowInit = cmd === 'yarn' ? `${cmd} flow init` : `${cmd} run flow init`
-
 const READMEmd = `<div align="center">
 
 <h1>Project Title Goes Here</h1>
@@ -144,8 +141,6 @@ if (isCreateReactApp) {
 
   spawnSync(cmd, args, { stdio: 'inherit', })
 
-  execSync(flowInit, { stdio: 'ignore', })
-
   execSync('git add -A', { stdio: 'ignore', })
   execSync('git commit -m "Development configuration updated"', {
     stdio: 'ignore',
@@ -159,11 +154,9 @@ if (isCreateReactApp) {
     'babel-eslint',
     'eslint',
     'eslint-config-react-app',
-    'eslint-plugin-flowtype',
     'eslint-plugin-import',
     'eslint-plugin-jsx-a11y',
     'eslint-plugin-react',
-    'gatsby-plugin-flow',
   ]
 
   // Initialize git before adding git hooks with husky
@@ -185,8 +178,6 @@ if (isCreateReactApp) {
   fs.writeFileSync(path.join(cwd, 'gatsby-config.js'), gatsbyconfigjs)
 
   spawnSync(cmd, gatsbyArgs, { stdio: 'inherit', })
-
-  execSync(flowInit, { stdio: 'ignore', })
 
   execSync('git add -A', { stdio: 'ignore', })
   execSync('git commit -m "Development configuration updated"', {
