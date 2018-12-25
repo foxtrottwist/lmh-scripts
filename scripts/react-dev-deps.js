@@ -18,10 +18,10 @@ const cwd = process.cwd()
 const devPkgs = [
   'eslint-config-prettier',
   'eslint-plugin-react-hooks@next',
-  'flow-bin',
   'husky',
   'lint-staged',
-  'prettier',
+  'tailwindcss',
+  '@fullhuman/postcss-purgecss',
   '-D',
 ]
 
@@ -32,7 +32,9 @@ const args = cmd === 'yarn' ? ['add', ...devPkgs,] : ['install', ...devPkgs,]
 
 // Are we in a create-react-app or a GatsbyJs project
 const isCreateReactApp = fs.existsSync('node_modules/react-scripts')
-const isGastbyjs = fs.existsSync('node_modules/gatsby')
+
+const isGastbyjs =
+  fs.existsSync('node_modules/gatsby') || fs.existsSync('gatsby-config.js')
 
 // package.json configurations
 const packagejson = require(path.join(cwd, 'package.json'))
@@ -92,11 +94,24 @@ const prettierrc = `{
 
 const gatsbyconfigjs = `module.exports = {
   siteMetadata: {
-    title: 'Gatsby Default Starter',
+    title: 'Hello Law, Good Luck!',
+    description: 'Hello Law, stay strong.',
+    author: '@foxtrottwist',
   },
   plugins: [
-    'gatsby-plugin-flow',
     'gatsby-plugin-react-helmet',
+    {
+      resolve: \`gatsby-plugin-postcss\`,
+      options: {
+        postCssPlugins: [
+          require('tailwindcss')('./tailwind.js'),
+          require('@fullhuman/postcss-purgecss')({
+            content: ['./src/**/*.js'],
+            whitelistPatterns: [/^hover:/, /^focus:/],
+          }),
+        ],
+      },
+    },
     {
       resolve: \`gatsby-source-filesystem\`,
       options: {
@@ -112,8 +127,8 @@ const gatsbyconfigjs = `module.exports = {
         name: 'gatsby-starter-default',
         short_name: 'starter',
         start_url: '/',
-        background_color: '#c71f16',
-        theme_color: '#c71f16',
+        background_color: '#008080',
+        theme_color: '#008080',
         display: 'minimal-ui',
         icon: 'src/images/gatsby-icon.png', // This path is relative to the root of the site.
       },
@@ -140,6 +155,7 @@ if (isCreateReactApp) {
   fs.writeFileSync(path.join(cwd, 'README.md'), READMEmd)
 
   spawnSync(cmd, args, { stdio: 'inherit', })
+  execSync('yarn add prettier --dev --exact', { stdio: 'inherit', })
 
   execSync('git add -A', { stdio: 'ignore', })
   execSync('git commit -m "Development configuration updated"', {
@@ -154,6 +170,7 @@ if (isCreateReactApp) {
     'babel-eslint',
     'eslint',
     'eslint-config-react-app',
+    'eslint-plugin-flowtype', // referenced in eslint-config-react-app
     'eslint-plugin-import',
     'eslint-plugin-jsx-a11y',
     'eslint-plugin-react',
@@ -177,7 +194,15 @@ if (isCreateReactApp) {
   fs.writeFileSync(path.join(cwd, 'README.md'), READMEmd)
   fs.writeFileSync(path.join(cwd, 'gatsby-config.js'), gatsbyconfigjs)
 
+  // Adding dev packages
   spawnSync(cmd, gatsbyArgs, { stdio: 'inherit', })
+
+  // Additional packages
+  execSync('yarn add prettier --dev --exact', { stdio: 'inherit', })
+  execSync('yarn add gatsby-plugin-postcss', { stdio: 'inherit', })
+
+  // Create tailwind config file
+  execSync('./node_modules/.bin/tailwind init', { stdio: 'inherit', })
 
   execSync('git add -A', { stdio: 'ignore', })
   execSync('git commit -m "Development configuration updated"', {
