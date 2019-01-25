@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 /*
   Provides additional dev dependencies for create-react-app
   and GatsbyJS projects. Adding prefered configurations
@@ -20,8 +18,6 @@ const devPkgs = [
   'eslint-plugin-react-hooks@next',
   'husky',
   'lint-staged',
-  'tailwindcss',
-  '@fullhuman/postcss-purgecss',
   '-D',
 ]
 
@@ -95,23 +91,12 @@ const prettierrc = `{
 const gatsbyconfigjs = `module.exports = {
   siteMetadata: {
     title: 'Hello Law, Good Luck!',
-    description: 'Hello Law, stay strong.',
+    description: 'Keep calm.',
     author: '@foxtrottwist',
   },
   plugins: [
+    'gatsby-plugin-styled-components',
     'gatsby-plugin-react-helmet',
-    {
-      resolve: \`gatsby-plugin-postcss\`,
-      options: {
-        postCssPlugins: [
-          require('tailwindcss')('./tailwind.js'),
-          require('@fullhuman/postcss-purgecss')({
-            content: ['./src/**/*.js'],
-            whitelistPatterns: [/^hover:/, /^focus:/],
-          }),
-        ],
-      },
-    },
     {
       resolve: \`gatsby-source-filesystem\`,
       options: {
@@ -124,7 +109,7 @@ const gatsbyconfigjs = `module.exports = {
     {
       resolve: \`gatsby-plugin-manifest\`,
       options: {
-        name: 'gatsby-starter-default',
+        name: 'starter',
         short_name: 'starter',
         start_url: '/',
         background_color: '#008080',
@@ -154,8 +139,12 @@ if (isCreateReactApp) {
   fs.writeFileSync(path.join(cwd, '.prettierrc'), prettierrc)
   fs.writeFileSync(path.join(cwd, 'README.md'), READMEmd)
 
+  // Adding dev packages
   spawnSync(cmd, args, { stdio: 'inherit', })
+
+  // Additional packages
   execSync('yarn add prettier --dev --exact', { stdio: 'inherit', })
+  execSync('yarn add styled-components', { stdio: 'inherit', })
 
   execSync('git add -A', { stdio: 'ignore', })
   execSync('git commit -m "Development configuration updated"', {
@@ -199,10 +188,10 @@ if (isCreateReactApp) {
 
   // Additional packages
   execSync('yarn add prettier --dev --exact', { stdio: 'inherit', })
-  execSync('yarn add gatsby-plugin-postcss', { stdio: 'inherit', })
-
-  // Create tailwind config file
-  execSync('./node_modules/.bin/tailwind init', { stdio: 'inherit', })
+  execSync(
+    'yarn add gatsby-plugin-styled-components styled-components babel-plugin-styled-components',
+    { stdio: 'inherit', },
+  )
 
   execSync('git add -A', { stdio: 'ignore', })
   execSync('git commit -m "Development configuration updated"', {
