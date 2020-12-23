@@ -49,15 +49,29 @@ const eslintConfig = {
     'react-hooks/rules-of-hooks': 'error',
   },
 }
+
+const prettier = {
+  'printWidth': 100,
+  'semi': false,
+  'singleQuote': true,
+  'trailingComma': 'all',
+  'arrowParens': 'avoid'
+}
+
 const husky = {
   hooks: {
     'pre-commit': 'lint-staged',
   },
 }
+
 const lintStaged = {
   'lint-staged': {
-    'src/**/*.{js,jsx,json,css,html,md,mdx}': ['prettier --write', 'git add',],
-  },
+    '*.{js,ts,tsx}': [
+      'eslint --cache --fix',
+      'jest --findRelatedTests'
+    ],
+    '*.{js,jsx,json,css,html,md,mdx}': 'prettier --write'
+  }
 }
 
 // README and configuration files
@@ -73,20 +87,6 @@ const READMEmd = `<div align="center">
 
 ### More to come...
 `
-const prettierrc = `{
-  "printWidth": 80,
-  "tabWidth": 2,
-  "useTabs": false,
-  "semi": false,
-  "singleQuote": true,
-  "trailingComma": "all",
-  "bracketSpacing": true,
-  "jsxBracketSameLine": false,
-  "arrowParens": "avoid",
-  "requirePragma": false,
-  "insertPragma": false,
-  "proseWrap": "preserve"
-}`
 
 const gatsbyconfigjs = `module.exports = {
   siteMetadata: {
@@ -130,13 +130,12 @@ if (isCreateReactApp) {
   fs.writeFileSync(
     path.join(cwd, 'package.json'),
     JSON.stringify(
-      { ...packagejson, scripts, eslintConfig, husky, ...lintStaged, },
+      { ...packagejson, scripts, eslintConfig, prettier, husky, ...lintStaged, },
       null,
       2,
     ) + os.EOL,
   )
 
-  fs.writeFileSync(path.join(cwd, '.prettierrc'), prettierrc)
   fs.writeFileSync(path.join(cwd, 'README.md'), READMEmd)
 
   // Adding dev packages
@@ -173,13 +172,12 @@ if (isCreateReactApp) {
   fs.writeFileSync(
     path.join(cwd, 'package.json'),
     JSON.stringify(
-      { dependencies, scripts, eslintConfig, husky, ...lintStaged, },
+      { dependencies, scripts, eslintConfig, prettier, husky, ...lintStaged, },
       null,
       2,
     ) + os.EOL,
   )
 
-  fs.writeFileSync(path.join(cwd, '.prettierrc'), prettierrc)
   fs.writeFileSync(path.join(cwd, 'README.md'), READMEmd)
   fs.writeFileSync(path.join(cwd, 'gatsby-config.js'), gatsbyconfigjs)
 
